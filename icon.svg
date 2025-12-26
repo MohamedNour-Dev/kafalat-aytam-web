@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Warm background circle (optional, or transparent) -->
+  <defs>
+    <linearGradient id="warmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f5f5dc;stop-opacity:1" /> <!-- Dark Beige -->
+      <stop offset="100%" style="stop-color:#ffe4c4;stop-opacity:1" /> <!-- Bisque/Warm tone -->
+    </linearGradient>
+  </defs>
+  
+  <!-- Stylized Hand (Olive Green / Earthy) -->
+  <path d="M256,464c-78.6,0-145.9-44.5-181.8-111.3c-5.5-10.2-2.3-22.9,7.4-29.2c45-28.9,98.4-45.5,155.4-45.5s129,23.3,169.8,63.1c7.7,7.5,8.1,20,0.9,28C366.6,419.6,314.4,464,256,464z" fill="#556b2f"/>
+  
+  <!-- Heart (Warm Dark Blue or calm color - let's go with a warm earthy red/organge or the requested dark blue) -->
+  <!-- Requested colors: dark blue, olive green, dark beige. Let's make the heart Dark Blue for contrast and "calmness" as requested in previous logic -->
+  <path d="M256,120c-35.3-40-90-40-125.3,0c-34.7,39.3-34.7,103.6,0,143.3L256,390l125.3-126.7c34.7-39.3,34.7-103.6,0-143.3C346,80,291.3,80,256,120z" fill="#1a237e"/>
+  
+  <!-- Small sprout/leaf accent (Olive Green) -->
+  <path d="M256,160c0,0,20-40,60-40s40,20,40,20s-10,30-40,40S256,160,256,160z" fill="#8fbc8f" opacity="0.8"/>
+</svg>
