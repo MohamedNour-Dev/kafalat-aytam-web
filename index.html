@@ -69,8 +69,39 @@
             <div class="hero-visual animate-fade">
                 <div class="blob-wrapper">
                     <!-- صورة تجريبية لليتيم (يمكن استبدالها لاحقاً) -->
-                    <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
-                        alt="طفل يبتسم" class="hero-img">
+                    <img src="hero-image.jpg.png" alt="أطفال يلعبون على الشاطئ" class="hero-img">
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم رسالتنا (Our Mission) -->
+        <section id="about" class="about-section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>رسالتنا ورؤيتنا</h2>
+                    <div class="title-underline"></div>
+                </div>
+                <div class="about-content">
+                    <div class="about-text animate-up">
+                        <div class="mission-box">
+                            <i class="fas fa-eye"></i>
+                            <h3>رؤيتنا</h3>
+                            <p>أن نكون النموذج الرائد عالمياً في رعاية وتمكين الأيتام، لنصنع جيلاً مبدعاً يساهم في بناء
+                                مجتمعه.</p>
+                        </div>
+                        <div class="mission-box">
+                            <i class="fas fa-bullseye"></i>
+                            <h3>رسالتنا</h3>
+                            <p>تقديم رعاية شاملة ومستدامة لليتيم من خلال بيئة آمنة ومحفزة، تضمن له حقوقه وتنمي قدراته
+                                وفق أحدث المعايير التربوية والنفسية.</p>
+                        </div>
+                    </div>
+                    <div class="about-image animate-fade">
+                        <div class="image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                                alt="رعاية الأيتام">
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -142,10 +173,89 @@
                 </div>
             </div>
         </section>
+
+
+        <!-- قسم تواصل معنا (Contact Us) -->
+        <section id="contact" class="contact-section">
+            <div class="container">
+                <div class="section-title">
+                    <h2>تواصل معنا</h2>
+                    <div class="title-underline"></div>
+                </div>
+                <div class="contact-grid">
+                    <div class="contact-info animate-up">
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <h4>العنوان</h4>
+                                <p>الرياض، المملكة العربية السعودية</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <h4>الهاتف</h4>
+                                <p>+966 12 345 6789</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <h4>البريد الإلكتروني</h4>
+                                <p>info@amal-orphan.org</p>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="contact-form animate-up">
+                        <div class="form-group">
+                            <input type="text" placeholder="الاسم الكامل" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" placeholder="البريد الإلكتروني" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea placeholder="رسالتك" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary">إرسال الرسالة</button>
+                    </form>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <!-- نافذة الكفالة المنبثقة (Modal) -->
+    <div id="sponsorModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal"><i class="fas fa-times"></i></button>
+            <div class="modal-header">
+                <h3>طلب كفالة</h3>
+                <p>اصنع فرقاً في حياة طفل اليوم</p>
+            </div>
+            <form class="sponsor-form">
+                <div class="form-group">
+                    <label>نوع الكفالة</label>
+                    <select id="sponsorshipType">
+                        <option value="education">كفالة تعليمية (150 ر.س)</option>
+                        <option value="full">كفالة شاملة (500 ر.س)</option>
+                        <option value="health">كفالة صحية (200 ر.س)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" placeholder="الاسم الكامل" required>
+                </div>
+                <div class="form-group">
+                    <input type="tel" placeholder="رقم الجوال" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" placeholder="البريد الإلكتروني" required>
+                </div>
+                <button type="submit" class="btn-primary-large" style="width: 100%;">إتمام الكفالة</button>
+            </form>
+        </div>
+    </div>
+
     <!-- قسم التذييل (Footer) -->
-    <footer class="main-footer">
+    <footer class="main-footer" id="contact">
         <div class="footer-content">
             <div class="footer-about">
                 <div class="logo">
@@ -158,7 +268,7 @@
                 <h4>روابط سريعة</h4>
                 <ul>
                     <li><a href="#home">الرئيسية</a></li>
-                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#impact">من نحن</a></li>
                     <li><a href="#donation">تبرع</a></li>
                     <li><a href="#contact">اتصل بنا</a></li>
                 </ul>
