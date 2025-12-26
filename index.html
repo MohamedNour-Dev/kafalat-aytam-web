@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز أمل لليتيم | رعاية - إبداع - أمل</title>
+
+    <!-- خطوط جوجل الحديثة (Cairo) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- أيقونات Font Awesome الحديثة -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- ملف التنسيق الأساسي -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- قسم شاشة التحميل (اختياري لمسة عصرية) -->
+    <div id="loader" class="loader-wrapper">
+        <div class="loader"></div>
+    </div>
+
+    <!-- قسم شريط التنقل (Navbar) -->
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-heart-pulse"></i>
+                <span>أمل<span>اليتيم</span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home" class="active">الرئيسية</a></li>
+                <li><a href="#about">رسالتنا</a></li>
+                <li><a href="#impact">أثرنا</a></li>
+                <li><a href="#donation">كفالة</a></li>
+                <li><a href="#contact">تواصل معنا</a></li>
+            </ul>
+            <div class="nav-extra">
+                <button id="soundToggle" class="btn-icon" title="تشغيل/إيقاف الصوت">
+                    <i class="fas fa-volume-mute"></i>
+                </button>
+                <a href="#donation" class="btn-primary">تبرع الآن</a>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- قسم البطولة (Hero Section) -->
+        <section id="home" class="hero-section">
+            <div class="hero-content">
+                <h1 class="animate-up">نصنع <span>مستقبلاً</span> أجمل لكل طفل</h1>
+                <p class="animate-up">نحن لا نقدم مجرد رعاية، نحن نبني أحلاماً ونزرع أملاً في قلوب من فقدوا السند. انضم
+                    إلينا في رحلة التغيير.</p>
+                <div class="hero-btns animate-up">
+                    <a href="#donation" class="btn-primary-large">ابدأ الكفالة</a>
+                    <a href="#about" class="btn-outline-large">اكتشف المزيد</a>
+                </div>
+            </div>
+            <div class="hero-visual animate-fade">
+                <div class="blob-wrapper">
+                    <!-- صورة تجريبية لليتيم (يمكن استبدالها لاحقاً) -->
+                    <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="طفل يبتسم" class="hero-img">
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم الأرقام والإنجازات (Impact Stats) -->
+        <section id="impact" class="stats-section">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <i class="fas fa-child"></i>
+                        <h3 class="counter" data-target="500">0</h3>
+                        <p>طفل مكفول</p>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <h3 class="counter" data-target="120">0</h3>
+                        <p>منحة تعليمية</p>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-house-chimney-heart"></i>
+                        <h3 class="counter" data-target="50">0</h3>
+                        <p>بيت آمن</p>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-hands-holding-heart"></i>
+                        <h3 class="counter" data-target="2000">0</h3>
+                        <p>متبرع نشط</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- قسم كفالة الأيتام (Donation Cards) -->
+        <section id="donation" class="donation-section">
+            <div class="section-title">
+                <h2>برامج الكفالة المختارة</h2>
+                <div class="title-underline"></div>
+            </div>
+            <div class="cards-grid">
+                <!-- بطاقة كفالة تعليمية -->
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-book-reader"></i></div>
+                    <h3>كفالة تعليمية</h3>
+                    <p>تغطية تكاليف الدراسة والكتب واللوازم المدرسية لضمان مستقبل مشرق.</p>
+                    <div class="card-footer">
+                        <span class="price">150 ر.س / شهر</span>
+                        <a href="#" class="btn-card">اكفل الآن</a>
+                    </div>
+                </div>
+                <!-- بطاقة كفالة شاملة -->
+                <div class="card featured">
+                    <div class="card-icon"><i class="fas fa-star"></i></div>
+                    <h3>كفالة شاملة</h3>
+                    <p>تغطية كامل احتياجات الطفل من مسكن وغذاء وتعليم ورعاية صحية شاملة.</p>
+                    <div class="card-footer">
+                        <span class="price">500 ر.س / شهر</span>
+                        <a href="#" class="btn-card">اكفل الآن</a>
+                    </div>
+                </div>
+                <!-- بطاقة كفالة صحية -->
+                <div class="card">
+                    <div class="card-icon"><i class="fas fa-stethoscope"></i></div>
+                    <h3>كفالة صحية</h3>
+                    <p>تأمين الفحوصات الدورية والعلاجات اللازمة للأطفال ذوي الاحتياجات الخاصة.</p>
+                    <div class="card-footer">
+                        <span class="price">200 ر.س / شهر</span>
+                        <a href="#" class="btn-card">اكفل الآن</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- قسم التذييل (Footer) -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-about">
+                <div class="logo">
+                    <i class="fas fa-heart-pulse"></i>
+                    <span>أمل<span>اليتيم</span></span>
+                </div>
+                <p>مؤسسة خيرية رائدة تهدف إلى تمكين الأيتام وتوفير حياة كريمة لهم من خلال برامج تنموية ومستدامة.</p>
+            </div>
+            <div class="footer-links">
+                <h4>روابط سريعة</h4>
+                <ul>
+                    <li><a href="#home">الرئيسية</a></li>
+                    <li><a href="#about">من نحن</a></li>
+                    <li><a href="#donation">تبرع</a></li>
+                    <li><a href="#contact">اتصل بنا</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>تابعنا</h4>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>جميع الحقوق محفوظة &copy; 2024 مركز أمل لليتيم</p>
+        </div>
+    </footer>
+
+    <!-- ملفات الجافاسكريبت -->
+    <script src="script.js"></script>
+</body>
+
+</html>
