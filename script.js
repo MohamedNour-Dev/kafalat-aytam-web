@@ -194,6 +194,22 @@ const manualCodeInput = document.getElementById('manualCodeInput');
 const resetCountryBtn = document.getElementById('resetCountry');
 const dynamicFlag = document.getElementById('dynamicFlag');
 
+// دالة إغلاق النافذة (يجب تعريفها هنا قبل استخدامها)
+const closeModal = () => {
+    if (!modal) return;
+    modal.classList.remove('active');
+    // إعادة تعيين الحالة عند الإغلاق
+    const paymentForm = document.getElementById('payment-form');
+    if (paymentForm) {
+        paymentForm.style.display = 'block';
+        const modalHeader = document.querySelector('.modal-header');
+        if (modalHeader) modalHeader.style.display = 'block';
+        const successMsg = document.getElementById('payment-success');
+        if (successMsg) successMsg.style.display = 'none';
+        paymentForm.reset();
+    }
+};
+
 // خريطة الأعلام للكشف التلقائي (قائمة موسعة)
 const codeToFlag = {
     '1': '🇺🇸', // USA / Canada
@@ -425,26 +441,19 @@ sponsorBtns.forEach(btn => {
     });
 });
 
-// إغلاق النافذة
-const closeModal = () => {
-    modal.classList.remove('active');
-    // إعادة تعيين الحالة عند الإغلاق
-    if (document.getElementById('payment-form')) {
-        document.getElementById('payment-form').style.display = 'block';
-        document.querySelector('.modal-header').style.display = 'block';
-        document.getElementById('payment-success').style.display = 'none';
-        document.getElementById('payment-form').reset();
-    }
-};
-
-closeBtn.addEventListener('click', closeModal);
+// ربط زر الإغلاق (مع التحقق من وجوده)
+if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+}
 
 // إغلاق عند النقر خارج النافذة
-modal.addEventListener('click', (e) => {
-    if (e.target === modal) {
-        closeModal();
-    }
-});
+if (modal) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+}
 
 // =========================================
 // 6/ نموذج الدفع (Payment Process - Realistic)
