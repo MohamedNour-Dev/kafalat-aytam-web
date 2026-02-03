@@ -645,6 +645,104 @@ ul {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* إصلاح مشكلة ظهور الخيارات باللون الأبيض على خلفية بيضاء */
+.form-group select option {
+    background-color: var(--bg-card);
+    color: var(--text-white);
+}
+
+/* تنسيق حقل الهاتف والرمز الدولي */
+.phone-group-container {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.country-select {
+    width: 35% !important;
+    /* عرض الرمز الدولي */
+    flex-shrink: 0;
+}
+
+#sponsorPhone {
+    flex: 1;
+    /* باقي المساحة لرقم الهاتف */
+}
+
+
+/* تنسيق مجموعة الإدخال اليدوي */
+.manual-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 35%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 0 8px;
+    height: 47px;
+    /* لتطابق ارتفاع الحقول الأخرى */
+}
+
+.flag-display {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.manual-code-input {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    color: white !important;
+    width: 100%;
+    font-family: monospace;
+    font-size: 1.1rem;
+    height: 100%;
+}
+
+.manual-code-input:focus {
+    box-shadow: none !important;
+}
+
+.reset-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 5px;
+    transition: var(--transition);
+}
+
+.reset-btn:hover {
+    color: var(--primary);
+}
+
+
+/* رسائل الخطأ */
+.error-msg {
+    display: block;
+    color: #ef4444;
+    /* أحمر داكن */
+    font-size: 0.85rem;
+    margin-top: 5px;
+    height: 0;
+    overflow: hidden;
+    transition: var(--transition);
+}
+
+.error-msg.visible {
+    height: auto;
+    margin-top: 5px;
+}
+
+.form-group input.invalid,
+.form-group select.invalid {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+}
+
 /* النافذة المنبثقة (Modal) */
 .modal-overlay {
     position: fixed;
@@ -738,5 +836,138 @@ ul {
 
     .contact-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================
+   10/ نموذج الدفع (Payment Modal)
+   ========================================= */
+.payment-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    /* RTL support */
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    transition: var(--transition);
+    z-index: 2;
+}
+
+.input-with-icon input {
+    padding-right: 3rem !important;
+    /* Make space for icon */
+}
+
+.input-with-icon input:focus+i {
+    color: var(--primary);
+}
+
+/* Validation States */
+.input-error {
+    border-color: #ef4444 !important;
+    animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-5px);
+    }
+
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+/* Success Message */
+.success-message {
+    display: none;
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--primary);
+    border-radius: 50%;
+    color: white;
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Loading Spinner */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 0.5rem;
+    /* Logic for RTL */
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Message Style */
+.error-msg {
+    color: #ef4444;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+    display: none;
+    font-weight: 600;
+}
+
+.error-msg.visible {
+    display: block !important;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
     }
 }

@@ -12,6 +12,50 @@ window.addEventListener('scroll', () => {
     }
 });
 
+// =========================================
+// * تحديث القائمة النشطة (Active State)
+// =========================================
+const navItems = document.querySelectorAll('.nav-links a');
+const sections = document.querySelectorAll('section');
+
+// 1. التحديث عند النقر
+navItems.forEach(item => {
+    item.addEventListener('click', function () {
+        // إزالة الكلاس من الجميع
+        navItems.forEach(link => link.classList.remove('active'));
+        // إضافته للعنصر المنقور
+        this.classList.add('active');
+    });
+});
+
+// 2. التحديث عند التمرير (Scroll Spy)
+const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.3 // عندما يظهر 30% من القسم
+};
+
+const observerCallback = (entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            // الحصول على الـ id الخاص بالقسم الحالي
+            const id = entry.target.getAttribute('id');
+
+            // إزالة الكلاس من جميع الروابط
+            navItems.forEach(link => {
+                link.classList.remove('active');
+                // إضافة الكلاس للرابط المطابق للقسم الحالي
+                if (link.getAttribute('href') === `#${id}`) {
+                    link.classList.add('active');
+                }
+            });
+        }
+    });
+};
+
+const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
+sections.forEach(section => sectionObserver.observe(section));
+
 // نظام الصوت (اختياري - لمسة فنية)
 const soundBtn = document.getElementById('soundToggle');
 let isMuted = true;
@@ -137,15 +181,236 @@ document.querySelectorAll('.nav-links a').forEach(link => {
 const modal = document.getElementById('sponsorModal');
 const closeBtn = document.querySelector('.close-modal');
 const sponsorBtns = document.querySelectorAll('.btn-card, .btn-primary-large');
+// معالجة نموذج الكفالة
+const sponsorForm = document.querySelector('.sponsor-form');
+const sponsorName = document.getElementById('sponsorName');
+const sponsorEmail = document.getElementById('sponsorEmail');
+const sponsorPhone = document.getElementById('sponsorPhone');
+const countryCodeSelect = document.getElementById('countryCode');
+
+// عناصر الإدخال اليدوي
+const manualInputGroup = document.getElementById('manualInputGroup');
+const manualCodeInput = document.getElementById('manualCodeInput');
+const resetCountryBtn = document.getElementById('resetCountry');
+const dynamicFlag = document.getElementById('dynamicFlag');
+
+// خريطة الأعلام للكشف التلقائي (قائمة موسعة)
+const codeToFlag = {
+    '1': '🇺🇸', // USA / Canada
+    '7': '🇷🇺', // Russia
+    '20': '🇪🇬', '212': '🇲🇦', '213': '🇩🇿', '216': '🇹🇳', '218': '🇱🇾',
+    '222': '🇲🇷', '249': '🇸🇩', '252': '🇸🇴', '253': '🇩🇯', '269': '🇰🇲',
+    '30': '🇬🇷', '31': '🇳🇱', '32': '🇧🇪', '33': '🇫🇷', '34': '🇪🇸',
+    '39': '🇮🇹', '44': '🇬🇧', '49': '🇩🇪', '55': '🇧🇷', '61': '🇦🇺',
+    '62': '🇮🇩', '63': '🇵🇭', '64': '🇳🇿', '65': '🇸🇬', '66': '🇹🇭',
+    '81': '🇯🇵', '82': '🇰🇷', '84': '🇻🇳', '86': '🇨🇳', '90': '🇹🇷',
+    '91': '🇮🇳', '92': '🇵🇰', '93': '🇦🇫', '94': '🇱🇰', '95': '🇲🇲',
+    '98': '🇮🇷',
+    '960': '🇲🇻', '961': '🇱🇧', '962': '🇯🇴', '963': '🇸🇾', '964': '🇮🇶',
+    '965': '🇰🇼', '966': '🇸🇦', '967': '🇾🇪', '968': '🇴🇲', '970': '🇵🇸',
+    '971': '🇦🇪', '972': '🇮🇱', '973': '🇧🇭', '974': '🇶🇦', '975': '🇧🇹',
+    '976': '🇲🇳', '977': '🇳🇵', '993': '🇹🇲', '994': '🇦🇿', '995': '🇬🇪',
+    '996': '🇰🇬', '998': '🇺🇿'
+};
+
+// تبديل الوضع (القائمة <-> يدوي)
+countryCodeSelect.addEventListener('change', (e) => {
+    if (e.target.value === 'manual') {
+        countryCodeSelect.style.display = 'none';
+        manualInputGroup.style.display = 'flex';
+        manualCodeInput.focus();
+        manualCodeInput.value = '+'; // بادئة تلقائية
+    }
+});
+
+resetCountryBtn.addEventListener('click', () => {
+    manualInputGroup.style.display = 'none';
+    countryCodeSelect.style.display = 'block';
+    countryCodeSelect.value = '+966'; // إعادة تعيين للسعودية
+    manualCodeInput.value = '';
+    dynamicFlag.innerText = '🌐';
+});
+
+// الكشف التلقائي عن العلم
+manualCodeInput.addEventListener('input', (e) => {
+    let val = e.target.value;
+
+    // ضمان وجود + في البداية
+    if (!val.startsWith('+')) {
+        val = '+' + val.replace(/\+/g, '');
+        e.target.value = val;
+    }
+
+    // استخراج الكود (بدون +)
+    const code = val.substring(1);
+
+    // البحث عن العلم
+    // نحاول مطابقة أطول كود ممكن (3 أرقام، ثم 2، ثم 1)
+    let foundFlag = '🌐';
+
+    // نتحقق من 3 أرقام (مثل 966)
+    if (code.length >= 3 && codeToFlag[code.substring(0, 3)]) {
+        foundFlag = codeToFlag[code.substring(0, 3)];
+    }
+    // نتحقق من رقمين (مثل 20)
+    else if (code.length >= 2 && codeToFlag[code.substring(0, 2)]) {
+        foundFlag = codeToFlag[code.substring(0, 2)];
+    }
+    // نتحقق من رقم واحد (مثل 1)
+    else if (code.length >= 1 && codeToFlag[code.substring(0, 1)]) {
+        foundFlag = codeToFlag[code.substring(0, 1)];
+    }
+
+    dynamicFlag.innerText = foundFlag;
+});
+
+// دالة لإظهار رسالة الخطأ
+const showError = (input, message) => {
+    if (!input) return;
+    const formGroup = input.closest('.form-group') || input.closest('.phone-group-container');
+    if (!formGroup) return;
+    const errorSpan = formGroup.querySelector('.error-msg');
+    input.classList.add('invalid');
+    if (errorSpan) {
+        errorSpan.innerText = message;
+        errorSpan.classList.add('visible');
+    }
+};
+
+// دالة لإخفاء رسالة الخطأ
+const clearError = (input) => {
+    if (!input) return;
+    const formGroup = input.closest('.form-group') || input.closest('.phone-group-container');
+    if (!formGroup) return;
+    const errorSpan = formGroup.querySelector('.error-msg');
+    input.classList.remove('invalid');
+    if (errorSpan) {
+        errorSpan.classList.remove('visible');
+    }
+};
+
+// التحقق من الاسم
+const validateName = () => {
+    if (!sponsorName) return true; // إذا لم يكن العنصر موجوداً، نتجاوز التحقق
+    const value = sponsorName.value.trim();
+    if (!value) {
+        showError(sponsorName, 'الرجاء إدخال الاسم الكامل');
+        return false;
+    }
+    const nameRegex = /^[a-zA-Z\u0600-\u06FF\s]+$/;
+    if (!nameRegex.test(value)) {
+        showError(sponsorName, 'الاسم يجب أن يحتوي على حروف فقط');
+        return false;
+    }
+    clearError(sponsorName);
+    return true;
+};
+
+// التحقق من البريد
+const validateEmail = () => {
+    if (!sponsorEmail) return true; // إذا لم يكن العنصر موجوداً، نتجاوز التحقق
+    const value = sponsorEmail.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(value)) {
+        showError(sponsorEmail, 'الرجاء إدخال بريد إلكتروني صحيح');
+        return false;
+    }
+    clearError(sponsorEmail);
+    return true;
+};
+
+// التحقق من الهاتف
+const validatePhone = () => {
+    if (!sponsorPhone) return true; // إذا لم يكن العنصر موجوداً، نتجاوز التحقق
+    const value = sponsorPhone.value.trim();
+    const phoneRegex = /^\d{5,15}$/;
+    if (!phoneRegex.test(value)) {
+        showError(sponsorPhone, 'الرجاء إدخال رقم جوال صحيح');
+        return false;
+    }
+    clearError(sponsorPhone);
+    return true;
+};
+
+// تفعيل التحقق الفوري (مع التحقق من وجود العناصر)
+if (sponsorName) {
+    sponsorName.addEventListener('input', validateName);
+}
+if (sponsorEmail) {
+    sponsorEmail.addEventListener('input', validateEmail);
+}
+if (sponsorPhone) {
+    sponsorPhone.addEventListener('input', () => {
+        sponsorPhone.value = sponsorPhone.value.replace(/[^0-9]/g, '');
+        if (sponsorPhone.value.length > 0) validatePhone();
+    });
+}
+
+
+if (sponsorForm) {
+    sponsorForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const isNameValid = validateName();
+        const isEmailValid = validateEmail();
+        const isPhoneValid = validatePhone();
+
+        if (isNameValid && isEmailValid && isPhoneValid) {
+            // تحديد الكود النهائي (إما من القائمة أو اليدوي)
+            let finalCode = countryCodeSelect ? countryCodeSelect.value : '+966';
+            if (countryCodeSelect && countryCodeSelect.style.display === 'none') {
+                finalCode = manualCodeInput ? manualCodeInput.value : '+966';
+                // تحقق بسيط من الكود اليدوي
+                if (finalCode.length < 2) {
+                    alert('الرجاء إدخال رمز دولي صحيح');
+                    return;
+                }
+            }
+
+            const submitBtn = sponsorForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+            const fullPhoneNumber = `${finalCode} ${sponsorPhone.value}`;
+
+            submitBtn.innerText = 'جاري المعالجة...';
+            submitBtn.disabled = true;
+
+            setTimeout(() => {
+                alert(`شكراً لك ${sponsorName.value}!\nتم استلام طلب الكفالة.\nالجوال: ${fullPhoneNumber}`);
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+                closeModal();
+                sponsorForm.reset();
+                // إعادة تعيين الوضع الافتراضي
+                if (resetCountryBtn) resetCountryBtn.click();
+            }, 1500);
+        }
+    });
+}
 const sponsorshipTypeSelect = document.getElementById('sponsorshipType');
 
 // فتح النافذة عند النقر على أزرار الكفالة
+console.log('عدد أزرار الكفالة:', sponsorBtns.length);
 sponsorBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-        if (btn.getAttribute('href') === '#donation') return; // تجاهل زر "ابدأ الكفالة" العلوي إذا كان مجرد رابط تنقل
-
+        console.log('تم النقر على زر الكفالة');
+        // نمنع الانتقال الافتراضي فوراً
         e.preventDefault();
 
+        // إذا كان الزر هو "تبرع الآن" (الرئيسي)، نفتح المودال أيضاً أو نتركه يذهب لقسم التبرع؟
+        // المستخدم كان يشتكي من "اكفل الآن" (في البطاقات).
+        // لكن لضمان عدم حدوث تضارب، سنتحقق:
+        if (btn.getAttribute('href') === '#donation') {
+            console.log('زر التبرع - سيتم التمرير');
+            // هذا الزر يذهب لقسم التبرع، سنسمح له بالتمرير (Scroll)
+            // ولكننا منعنا الافتراضي، لذا سنقوم بالتمرير يدوياً
+            const targetSection = document.querySelector('#donation');
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            return;
+        }
+
+        console.log('سيتم فتح المودال');
         // تحديد نوع الكفالة بناءً على البطاقة
         const card = btn.closest('.card');
         if (card) {
@@ -156,12 +421,20 @@ sponsorBtns.forEach(btn => {
         }
 
         modal.classList.add('active');
+        console.log('تمت إضافة class active للمودال');
     });
 });
 
 // إغلاق النافذة
 const closeModal = () => {
     modal.classList.remove('active');
+    // إعادة تعيين الحالة عند الإغلاق
+    if (document.getElementById('payment-form')) {
+        document.getElementById('payment-form').style.display = 'block';
+        document.querySelector('.modal-header').style.display = 'block';
+        document.getElementById('payment-success').style.display = 'none';
+        document.getElementById('payment-form').reset();
+    }
 };
 
 closeBtn.addEventListener('click', closeModal);
@@ -173,32 +446,168 @@ modal.addEventListener('click', (e) => {
     }
 });
 
-// معالجة نموذج الكفالة
-const sponsorForm = document.querySelector('.sponsor-form');
-sponsorForm.addEventListener('submit', (e) => {
-    e.preventDefault();
+// =========================================
+// 6/ نموذج الدفع (Payment Process - Realistic)
+// =========================================
+const paymentForm = document.getElementById('payment-form');
+const cardHolder = document.getElementById('cardHolder');
+const cardNumber = document.getElementById('cardNumber');
+const cardExpiry = document.getElementById('cardExpiry');
+const cardCvc = document.getElementById('cardCvc');
+const successMessage = document.getElementById('payment-success');
 
-    // محاكاة إرسال البيانات
-    const submitBtn = sponsorForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerText;
+// التحقق البسيط (Simple Validation Helper)
+const validateInput = (input) => {
+    if (input.value.trim().length > 0) {
+        input.classList.remove('input-error');
+    }
+}
 
-    submitBtn.innerText = 'جاري المعالجة...';
-    submitBtn.disabled = true;
+// تنسيق رقم البطاقة (Format Card Number)
+if (cardNumber) {
+    cardNumber.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        // إضافة مسافة كل 4 أرقام
+        value = value.replace(/(\d{4})/g, '$1 ').trim();
+        e.target.value = value.substring(0, 19); // 16 digits + 3 spaces
+        validateInput(e.target);
+    });
+}
 
-    setTimeout(() => {
-        alert('شكراً لك! تم استلام طلب الكفالة بنجاح وسنتواصل معك قريباً.');
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
-        closeModal();
-        sponsorForm.reset();
-    }, 1500);
-});
+// تنسيق التايرخ (Format Date MM/YY)
+if (cardExpiry) {
+    cardExpiry.addEventListener('input', (e) => {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value.substring(0, 5);
+        validateInput(e.target);
+    });
+}
 
-// معالجة نموذج التواصل
+// تنسيق CVV
+if (cardCvc) {
+    cardCvc.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+        validateInput(e.target);
+    });
+}
+
+// خوارزمية لوهن (Luhn Algorithm) للتحقق من البطاقة
+const luhnCheck = (val) => {
+    let checksum = 0;
+    let j = 1;
+    for (let i = val.length - 1; i >= 0; i--) {
+        let calc = 0;
+        calc = Number(val.charAt(i)) * j;
+        if (calc > 9) {
+            checksum = checksum + 1;
+            calc = calc - 10;
+        }
+        checksum = checksum + calc;
+        if (j == 1) { j = 2 } else { j = 1 };
+    }
+    return (checksum % 10) == 0;
+};
+
+// معالجة الدفع (Process Payment)
+if (paymentForm) {
+    paymentForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // 1. التحقق من صحة البطاقة
+        const rawCardNum = cardNumber.value.replace(/\s/g, '');
+        // للسماح بالتجربة السهلة، يمكننا تخفيف الشرط أو جعله صارماً. سأجعله صارماً لـ "Realism"
+        // لكن سأسمح ببطاقة اختبار بسيطة 4242... إذا فشل اللوهن للتسهيل على المستخدم، أو ألتزم بالطلب "Real".
+        // سأطبق اللوهن.
+        if (rawCardNum.length < 13 || !luhnCheck(rawCardNum)) {
+            // Check specific test case 1234... for ease? No, User said "Real".
+            cardNumber.classList.add('input-error');
+            cardNumber.focus();
+            // alert('رقم البطاقة غير صحيح (استخدم رقم حقيقي أو اختبار مثل 4242...)');
+            return;
+        }
+
+        if (cardExpiry.value.length < 5) {
+            cardExpiry.classList.add('input-error');
+            cardExpiry.focus();
+            return;
+        }
+
+        // 2. محاكاة المعالجة (Processing Simulation)
+        const btn = paymentForm.querySelector('button');
+        const btnText = document.getElementById('btn-text');
+
+        // حالة التحميل
+        const originalText = btnText.innerText;
+        btnText.innerText = 'جاري المعالجة...';
+
+        // إضافة Spinner
+        const spinner = document.createElement('div');
+        spinner.className = 'spinner';
+        btn.appendChild(spinner);
+
+        btn.disabled = true;
+        btn.style.cursor = 'wait';
+
+        // 3. النجاح بعد 3 ثواني
+        setTimeout(() => {
+            // إخفاء النموذج
+            paymentForm.style.display = 'none';
+            document.querySelector('.modal-header').style.display = 'none'; // إخفاء العنوان أيضاً
+
+            // إظهار رسالة النجاح
+            successMessage.style.display = 'block';
+
+            // تنظيف
+            spinner.remove();
+            btnText.innerText = originalText;
+            btn.disabled = false;
+            btn.style.cursor = 'pointer';
+        }, 3000);
+    });
+}
+
+// =========================================
+// 7/ معالجة نموذج التواصل
+// =========================================
 const contactForm = document.querySelector('.contact-form');
+const contactNameInput = document.getElementById('contactName');
+
+if (contactNameInput) {
+    contactNameInput.addEventListener('input', function () {
+        const val = this.value;
+        const formGroup = this.closest('.form-group');
+        const errorSpan = formGroup.querySelector('.error-msg');
+
+        // التحقق من وجود أرقام (إنجليزية أو عربية)
+        if (/[0-9\u0660-\u0669]/.test(val)) {
+            this.classList.add('input-error');
+            if (errorSpan) {
+                errorSpan.innerText = 'يجب عليك إدخال أحرف فقط';
+                errorSpan.classList.add('visible');
+            }
+        } else {
+            this.classList.remove('input-error');
+            if (errorSpan) {
+                errorSpan.classList.remove('visible');
+            }
+        }
+    });
+}
+
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        // التحقق قبل الإرسال
+        const nameVal = contactNameInput ? contactNameInput.value : '';
+        if (/[0-9\u0660-\u0669]/.test(nameVal)) {
+            if (contactNameInput) contactNameInput.focus();
+            return;
+        }
+
         const btn = contactForm.querySelector('button');
         btn.innerText = 'جاري الإرسال...';
 
@@ -206,6 +615,9 @@ if (contactForm) {
             alert('تم استلام رسالتك بنجاح!');
             btn.innerText = 'إرسال الرسالة';
             contactForm.reset();
+            // إزالة الأخطاء
+            document.querySelectorAll('.contact-form .input-error').forEach(el => el.classList.remove('input-error'));
+            document.querySelectorAll('.contact-form .error-msg').forEach(el => el.classList.remove('visible'));
         }, 1500);
     });
 }
