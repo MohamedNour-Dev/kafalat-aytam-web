@@ -263,6 +263,11 @@
             <!-- Payment Form -->
             <form class="sponsor-form" id="payment-form">
                 <div class="form-group">
+                    <input type="text" id="sponsorName" placeholder="الاسم الكامل" required>
+                    <span class="error-msg"></span>
+                </div>
+
+                <div class="form-group">
                     <label>نوع الكفالة</label>
                     <select id="sponsorshipType">
                         <option value="education">كفالة تعليمية (150 ر.س)</option>
@@ -317,6 +322,16 @@
                     <span class="error-msg"></span>
                 </div>
 
+                <div class="form-group">
+                    <input type="text" id="cardHolder" placeholder="اسم صاحب البطاقة" required>
+                    <span class="error-msg"></span>
+                </div>
+
+                <div class="form-group input-with-icon">
+                    <i class="far fa-credit-card"></i>
+                    <input type="text" id="cardNumber" placeholder="رقم البطاقة (16 رقم)" required>
+                </div>
+
                 <div class="payment-grid">
                     <div class="form-group input-with-icon">
                         <i class="far fa-calendar-alt"></i>
@@ -337,7 +352,7 @@
     </div>
 
     <!-- قسم التذييل (Footer) -->
-    <footer class="main-footer" id="contact">
+    <footer class="main-footer">
         <div class="footer-content">
             <div class="footer-about">
                 <div class="logo">
@@ -350,7 +365,7 @@
                 <h4>روابط سريعة</h4>
                 <ul>
                     <li><a href="#home">الرئيسية</a></li>
-                    <li><a href="#impact">من نحن</a></li>
+                    <li><a href="#about">من نحن</a></li>
                     <li><a href="#donation">تبرع</a></li>
                     <li><a href="#contact">اتصل بنا</a></li>
                 </ul>

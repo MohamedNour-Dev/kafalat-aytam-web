@@ -408,45 +408,7 @@ if (sponsorPhone) {
 }
 
 
-if (sponsorForm) {
-    sponsorForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        const isNameValid = validateName();
-        const isEmailValid = validateEmail();
-        const isPhoneValid = validatePhone();
-
-        if (isNameValid && isEmailValid && isPhoneValid) {
-            // تحديد الكود النهائي (إما من القائمة أو اليدوي)
-            let finalCode = countryCodeSelect ? countryCodeSelect.value : '+966';
-            if (countryCodeSelect && countryCodeSelect.style.display === 'none') {
-                finalCode = manualCodeInput ? manualCodeInput.value : '+966';
-                // تحقق بسيط من الكود اليدوي
-                if (finalCode.length < 2) {
-                    alert('الرجاء إدخال رمز دولي صحيح');
-                    return;
-                }
-            }
-
-            const submitBtn = sponsorForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            const fullPhoneNumber = `${finalCode} ${sponsorPhone.value}`;
-
-            submitBtn.innerText = 'جاري المعالجة...';
-            submitBtn.disabled = true;
-
-            setTimeout(() => {
-                alert(`شكراً لك ${sponsorName.value}!\nتم استلام طلب الكفالة.\nالجوال: ${fullPhoneNumber}`);
-                submitBtn.innerText = originalText;
-                submitBtn.disabled = false;
-                closeModal();
-                sponsorForm.reset();
-                // إعادة تعيين الوضع الافتراضي
-                if (resetCountryBtn) resetCountryBtn.click();
-            }, 1500);
-        }
-    });
-}
+// ملاحظة: تم دمج منطق النموذج في قسم 6 بالأسفل لتجنب التضارب.
 const sponsorshipTypeSelect = document.getElementById('sponsorshipType');
 
 // فتح النافذة عند النقر على أزرار الكفالة
@@ -570,26 +532,54 @@ if (paymentForm) {
     paymentForm.addEventListener('submit', (e) => {
         e.preventDefault();
 
-        // 1. التحقق من صحة البطاقة
+        // 1. التحقق من صحة المدخلات الأساسية
+        const isNameValid = validateName();
+        const isEmailValid = validateEmail();
+        const isPhoneValid = validatePhone();
+
+        if (!isNameValid || !isEmailValid || !isPhoneValid) {
+            return;
+        }
+
+        // 2. التحقق من صحة البطاقة
         const rawCardNum = cardNumber.value.replace(/\s/g, '');
-        // للسماح بالتجربة السهلة، يمكننا تخفيف الشرط أو جعله صارماً. سأجعله صارماً لـ "Realism"
-        // لكن سأسمح ببطاقة اختبار بسيطة 4242... إذا فشل اللوهن للتسهيل على المستخدم، أو ألتزم بالطلب "Real".
-        // سأطبق اللوهن.
         if (rawCardNum.length < 13 || !luhnCheck(rawCardNum)) {
-            // Check specific test case 1234... for ease? No, User said "Real".
             cardNumber.classList.add('input-error');
             cardNumber.focus();
-            // alert('رقم البطاقة غير صحيح (استخدم رقم حقيقي أو اختبار مثل 4242...)');
+            showError(cardNumber, 'رقم البطاقة غير صحيح (استخدم رقم حقيقي أو اختبار)');
             return;
+        } else {
+            clearError(cardNumber);
+        }
+
+        if (cardHolder && cardHolder.value.trim().length < 3) {
+            cardHolder.classList.add('input-error');
+            cardHolder.focus();
+            showError(cardHolder, 'الرجاء إدخال اسم صاحب البطاقة');
+            return;
+        } else if (cardHolder) {
+            clearError(cardHolder);
         }
 
         if (cardExpiry.value.length < 5) {
             cardExpiry.classList.add('input-error');
             cardExpiry.focus();
+            showError(cardExpiry, 'تاريخ الانتهاء غير صحيح');
             return;
+        } else {
+            clearError(cardExpiry);
         }
 
-        // 2. محاكاة المعالجة (Processing Simulation)
+        if (cardCvc.value.length < 3) {
+            cardCvc.classList.add('input-error');
+            cardCvc.focus();
+            showError(cardCvc, 'رمز التحقق (CVV) غير صحيح');
+            return;
+        } else {
+            clearError(cardCvc);
+        }
+
+        // 3. محاكاة المعالجة (Processing Simulation)
         const btn = paymentForm.querySelector('button');
         const btnText = document.getElementById('btn-text');
 
@@ -605,11 +595,21 @@ if (paymentForm) {
         btn.disabled = true;
         btn.style.cursor = 'wait';
 
-        // 3. النجاح بعد 3 ثواني
+        // تحديد الكود النهائي للجوال (للعرض فقط)
+        let finalCode = countryCodeSelect ? countryCodeSelect.value : '+966';
+        if (countryCodeSelect && countryCodeSelect.style.display === 'none') {
+            finalCode = manualCodeInput ? manualCodeInput.value : '+966';
+        }
+        const fullPhoneNumber = `${finalCode} ${sponsorPhone.value}`;
+
+        // 4. النجاح بعد 3 ثواني
         setTimeout(() => {
+            console.log(`Donation received from ${sponsorName.value} (${sponsorEmail.value}), phone: ${fullPhoneNumber}`);
+
             // إخفاء النموذج
             paymentForm.style.display = 'none';
-            document.querySelector('.modal-header').style.display = 'none'; // إخفاء العنوان أيضاً
+            const modalHeader = document.querySelector('.modal-header');
+            if (modalHeader) modalHeader.style.display = 'none';
 
             // إظهار رسالة النجاح
             successMessage.style.display = 'block';
@@ -619,6 +619,9 @@ if (paymentForm) {
             btnText.innerText = originalText;
             btn.disabled = false;
             btn.style.cursor = 'pointer';
+
+            // إعادة تعيين النموذج للخلفية (للمرة القادمة)
+            // سيتم تصفير النموذج عند الإغلاق في closeModal()
         }, 3000);
     });
 }
