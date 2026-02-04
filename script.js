@@ -678,3 +678,19 @@ if (contactForm) {
         }, 1500);
     });
 }
+
+// =========================================
+// 8/ إدارة شاشة التحميل (Loader Management)
+// =========================================
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        // إضافة الكلاس المخفي لبدء الـ transition
+        loader.classList.add('loader-hidden');
+
+        // إزالة العنصر من الـ DOM بعد انتهاء الحركة تماماً (اختياري)
+        setTimeout(() => {
+            loader.style.display = 'none';
+        }, 600);
+    }
+});
