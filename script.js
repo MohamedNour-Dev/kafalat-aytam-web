@@ -56,20 +56,65 @@ const observerCallback = (entries) => {
 const sectionObserver = new IntersectionObserver(observerCallback, observerOptions);
 sections.forEach(section => sectionObserver.observe(section));
 
-// نظام الصوت (اختياري - لمسة فنية)
+// نظام الصوت (التحكم بموسيقى الخلفية)
 const soundBtn = document.getElementById('soundToggle');
-let isMuted = true;
-let audio = new Audio('https://www.soundjay.com/buttons/sounds/button-16.mp3'); // مثال لصوت بسيط
+const bgAudio = document.getElementById('bgAudio');
 
-soundBtn.addEventListener('click', () => {
-    isMuted = !isMuted;
-    if (!isMuted) {
-        soundBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-        // إضافة الكود الخاص بتشغيل موسيقى خلفية هادئة هنا
-    } else {
+// دالة لتحديث شكل الزر
+const updateSoundUI = () => {
+    if (!soundBtn || !bgAudio) return;
+    if (bgAudio.paused) {
         soundBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        soundBtn.classList.remove('playing');
+    } else {
+        soundBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        soundBtn.classList.add('playing');
     }
-});
+};
+
+if (soundBtn && bgAudio) {
+    bgAudio.volume = 0.6; // مستوى صوت واضح
+
+    // محاولة التشغيل
+    const startAudio = () => {
+        bgAudio.play().then(() => {
+            updateSoundUI();
+            console.log("Audio started successfully");
+            // بمجرد أن يبدأ بنجاح، نزيل المستمعات
+            removeInteractionListeners();
+        }).catch(err => {
+            console.log("Waiting for user interaction to play audio...");
+        });
+    };
+
+    // مستمعات التفاعل
+    const interactionEvents = ['click', 'touchstart', 'scroll', 'mousemove', 'keydown'];
+
+    const removeInteractionListeners = () => {
+        interactionEvents.forEach(event => {
+            document.removeEventListener(event, startAudio);
+        });
+    };
+
+    interactionEvents.forEach(event => {
+        document.addEventListener(event, startAudio);
+    });
+
+    // التحكم اليدوي بالزر
+    soundBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // منع المستمع العام من التداخل
+        if (bgAudio.paused) {
+            bgAudio.play().then(updateSoundUI);
+        } else {
+            bgAudio.pause();
+            updateSoundUI();
+        }
+    });
+
+    // مزامنة حالة الأيقونة
+    bgAudio.addEventListener('play', updateSoundUI);
+    bgAudio.addEventListener('pause', updateSoundUI);
+}
 
 // =========================================
 // 2/ قسم العدادات (Counter Animation)
